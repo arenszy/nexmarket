@@ -3,11 +3,19 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { User, MapPin, Lock, Store, Bell } from 'lucide-react'
+import { User, MapPin, Lock } from 'lucide-react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import toast from 'react-hot-toast'
+
+interface Profile {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  avatar: string | null
+  role: string
+}
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -21,12 +29,15 @@ export default function ProfilePage() {
     setForm({ name: user.name, phone: '' })
   }, [user])
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading } = useQuery<Profile>({
     queryKey: ['profile'],
     queryFn: () => api.get('/users/profile').then(r => r.data),
     enabled: !!user,
-    onSuccess: (data: any) => setForm({ name: data.name, phone: data.phone || '' }),
-  } as any)
+  })
+
+  useEffect(() => {
+    if (profile) setForm({ name: profile.name, phone: profile.phone || '' })
+  }, [profile])
 
   const updateMutation = useMutation({
     mutationFn: (data: any) => api.put('/users/profile', data).then(r => r.data),
@@ -39,7 +50,17 @@ export default function ProfilePage() {
   })
 
   if (!user) return null
-  if (isLoading) return <LoadingSpinner />
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto" />
+          <div className="h-48 bg-gray-200 rounded" />
+        </div>
+      </div>
+    )
+  }
 
   const tabs = [
     { id: 'profile', label: 'Profil', icon: User },
@@ -66,8 +87,15 @@ export default function ProfilePage() {
             </div>
             <nav className="space-y-1">
               {tabs.map(({ id, label, icon: Icon }) => (
-                <button key={id} onClick={() => setActiveTab(id)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${activeTab === id ? 'bg-orange-50 text-shopee-orange font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${
+                    activeTab === id
+                      ? 'bg-orange-50 text-shopee-orange font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
                   <Icon size={15} /> {label}
                 </button>
               ))}
@@ -80,24 +108,43 @@ export default function ProfilePage() {
           {activeTab === 'profile' && (
             <div className="bg-white rounded-lg p-6">
               <h2 className="font-semibold text-gray-800 mb-4">Profil Saya</h2>
-              <form onSubmit={e => { e.preventDefault(); updateMutation.mutate(form) }} className="space-y-4 max-w-md">
+              <form
+                onSubmit={e => { e.preventDefault(); updateMutation.mutate(form) }}
+                className="space-y-4 max-w-md"
+              >
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">Nama Lengkap</label>
-                  <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="input-field" />
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    className="input-field"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">Email</label>
-                  <input type="email" value={profile?.email || ''} disabled
-                    className="input-field bg-gray-50 cursor-not-allowed" />
+                  <input
+                    type="email"
+                    value={profile?.email ?? ''}
+                    disabled
+                    className="input-field bg-gray-50 cursor-not-allowed"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">No. HP</label>
-                  <input type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
-                    placeholder="+62..." className="input-field" />
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    placeholder="+62..."
+                    className="input-field"
+                  />
                 </div>
-                <button type="submit" disabled={updateMutation.isPending}
-                  className="btn-primary px-6 py-2 text-sm disabled:opacity-50">
+                <button
+                  type="submit"
+                  disabled={updateMutation.isPending}
+                  className="btn-primary px-6 py-2 text-sm disabled:opacity-50"
+                >
                   {updateMutation.isPending ? 'Menyimpan...' : 'Simpan'}
                 </button>
               </form>
@@ -135,7 +182,10 @@ function ChangePasswordForm() {
     if (form.newPassword !== form.confirmPassword) { toast.error('Password baru tidak cocok'); return }
     setIsLoading(true)
     try {
-      await api.put('/users/change-password', { currentPassword: form.currentPassword, newPassword: form.newPassword })
+      await api.put('/users/change-password', {
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      })
       toast.success('Password berhasil diubah')
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (err: any) {
@@ -149,18 +199,34 @@ function ChangePasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
       <div>
         <label className="block text-sm text-gray-600 mb-1">Password Saat Ini</label>
-        <input type="password" value={form.currentPassword} onChange={e => setForm({ ...form, currentPassword: e.target.value })}
-          required className="input-field" />
+        <input
+          type="password"
+          value={form.currentPassword}
+          onChange={e => setForm({ ...form, currentPassword: e.target.value })}
+          required
+          className="input-field"
+        />
       </div>
       <div>
         <label className="block text-sm text-gray-600 mb-1">Password Baru</label>
-        <input type="password" value={form.newPassword} onChange={e => setForm({ ...form, newPassword: e.target.value })}
-          required minLength={8} className="input-field" />
+        <input
+          type="password"
+          value={form.newPassword}
+          onChange={e => setForm({ ...form, newPassword: e.target.value })}
+          required
+          minLength={8}
+          className="input-field"
+        />
       </div>
       <div>
         <label className="block text-sm text-gray-600 mb-1">Konfirmasi Password Baru</label>
-        <input type="password" value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-          required className="input-field" />
+        <input
+          type="password"
+          value={form.confirmPassword}
+          onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+          required
+          className="input-field"
+        />
       </div>
       <button type="submit" disabled={isLoading} className="btn-primary px-6 py-2 text-sm disabled:opacity-50">
         {isLoading ? 'Menyimpan...' : 'Ubah Password'}
