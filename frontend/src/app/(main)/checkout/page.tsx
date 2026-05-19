@@ -11,6 +11,18 @@ import { useCartStore } from '@/store/cart.store'
 import { formatPrice } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
+interface Address {
+  id: string
+  label: string
+  recipientName: string
+  phone: string
+  street: string
+  city: string
+  province: string
+  postalCode: string
+  isDefault: boolean
+}
+
 function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -25,16 +37,21 @@ function CheckoutContent() {
 
   useEffect(() => { if (!user) router.push('/login') }, [user])
 
-  const { data: addresses } = useQuery({
+  const { data: addressData } = useQuery<Address[]>({
     queryKey: ['addresses'],
     queryFn: () => api.get('/users/addresses').then((r) => r.data),
     enabled: !!user,
-    onSuccess: (data: any[]) => {
-      const def = data.find((a) => a.isDefault)
-      if (def) setSelectedAddress(def.id)
-      else if (data.length > 0) setSelectedAddress(data[0].id)
-    },
-  } as any)
+  })
+
+  // Set default address when data loads
+  useEffect(() => {
+    if (addressData && addressData.length > 0) {
+      const def = addressData.find((a) => a.isDefault)
+      setSelectedAddress(def ? def.id : addressData[0].id)
+    }
+  }, [addressData])
+
+  const addresses: Address[] = addressData ?? []
 
   const subtotal = selectedItems.reduce((sum, item) => {
     const price = item.variant?.price ? Number(item.variant.price) : Number(item.product.price)
@@ -48,7 +65,6 @@ function CheckoutContent() {
         if (paymentProvider === 'midtrans') {
           const { data: payment } = await api.post(`/payments/midtrans/${order.id}`)
           if (payment.snapToken && typeof window !== 'undefined') {
-            // Load Midtrans Snap
             const script = document.createElement('script')
             script.src = 'https://app.sandbox.midtrans.com/snap/snap.js'
             script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '')
@@ -76,13 +92,7 @@ function CheckoutContent() {
   const handleCheckout = () => {
     if (!selectedAddress) { toast.error('Pilih alamat pengiriman'); return }
     if (selectedItems.length === 0) { toast.error('Tidak ada produk dipilih'); return }
-
-    createOrderMutation.mutate({
-      addressId: selectedAddress,
-      cartItemIds,
-      notes,
-      shippingCost: 0,
-    })
+    createOrderMutation.mutate({ addressId: selectedAddress, cartItemIds, notes, shippingCost: 0 })
   }
 
   return (
@@ -91,16 +101,24 @@ function CheckoutContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
+
           {/* Address */}
           <div className="card p-4">
             <div className="flex items-center gap-2 mb-3">
               <MapPin size={18} className="text-shopee-orange" />
               <h2 className="font-semibold text-shopee-text">Alamat Pengiriman</h2>
             </div>
-            {addresses?.length > 0 ? (
+            {addresses.length > 0 ? (
               <div className="space-y-2">
-                {addresses.map((addr: any) => (
-                  <label key={addr.id} className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${selectedAddress === addr.id ? 'border-shopee-orange bg-shopee-red-light' : 'border-shopee-gray-border hover:border-shopee-orange'}`}>
+                {addresses.map((addr) => (
+                  <label
+                    key={addr.id}
+                    className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${
+                      selectedAddress === addr.id
+                        ? 'border-shopee-orange bg-shopee-red-light'
+                        : 'border-shopee-gray-border hover:border-shopee-orange'
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="address"
@@ -111,8 +129,14 @@ function CheckoutContent() {
                     />
                     <div>
                       <p className="text-sm font-medium">{addr.recipientName} · {addr.phone}</p>
-                      <p className="text-xs text-shopee-text-light">{addr.street}, {addr.city}, {addr.province} {addr.postalCode}</p>
-                      {addr.isDefault && <span className="text-xs text-shopee-orange border border-shopee-orange px-1 rounded mt-1 inline-block">Utama</span>}
+                      <p className="text-xs text-shopee-text-light">
+                        {addr.street}, {addr.city}, {addr.province} {addr.postalCode}
+                      </p>
+                      {addr.isDefault && (
+                        <span className="text-xs text-shopee-orange border border-shopee-orange px-1 rounded mt-1 inline-block">
+                          Utama
+                        </span>
+                      )}
                     </div>
                   </label>
                 ))}
@@ -120,7 +144,10 @@ function CheckoutContent() {
             ) : (
               <div className="text-center py-4">
                 <p className="text-sm text-shopee-text-light mb-2">Belum ada alamat</p>
-                <button onClick={() => router.push('/profile/addresses')} className="btn-outline text-sm flex items-center gap-1 mx-auto">
+                <button
+                  onClick={() => router.push('/profile')}
+                  className="btn-outline text-sm flex items-center gap-1 mx-auto"
+                >
                   <Plus size={14} /> Tambah Alamat
                 </button>
               </div>
@@ -146,7 +173,9 @@ function CheckoutContent() {
                       {item.variant && <p className="text-xs text-shopee-text-light">{item.variant.value}</p>}
                       <p className="text-xs text-shopee-text-light">x{item.quantity}</p>
                     </div>
-                    <span className="text-sm font-medium text-shopee-orange">{formatPrice(price * item.quantity)}</span>
+                    <span className="text-sm font-medium text-shopee-orange">
+                      {formatPrice(price * item.quantity)}
+                    </span>
                   </div>
                 )
               })}
@@ -170,13 +199,20 @@ function CheckoutContent() {
                 { value: 'midtrans', label: 'Midtrans (Transfer Bank, E-Wallet, QRIS)', desc: 'GoPay, OVO, DANA, BCA, Mandiri, dll' },
                 { value: 'stripe', label: 'Stripe (Kartu Kredit/Debit)', desc: 'Visa, Mastercard, dll' },
               ].map((opt) => (
-                <label key={opt.value} className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${paymentProvider === opt.value ? 'border-shopee-orange bg-shopee-red-light' : 'border-shopee-gray-border hover:border-shopee-orange'}`}>
+                <label
+                  key={opt.value}
+                  className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${
+                    paymentProvider === opt.value
+                      ? 'border-shopee-orange bg-shopee-red-light'
+                      : 'border-shopee-gray-border hover:border-shopee-orange'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="payment"
                     value={opt.value}
                     checked={paymentProvider === opt.value}
-                    onChange={() => setPaymentProvider(opt.value as any)}
+                    onChange={() => setPaymentProvider(opt.value as 'midtrans' | 'stripe')}
                     className="mt-0.5 accent-shopee-orange"
                   />
                   <div>
