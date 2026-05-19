@@ -1,25 +1,20 @@
 services:
   - type: web
     name: nexmarket-backend
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && node dist/main
     plan: free
     healthCheckPath: /api/v1/health
+    nodeVersion: 20.11.0
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3001
       - key: DATABASE_URL
-        fromDatabase:
-          name: nexmarket-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: nexmarket-redis
-          type: redis
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -50,30 +45,3 @@ services:
         value: admin@nexmarket.com
       - key: ADMIN_PASSWORD
         sync: false
-
-  - type: web
-    name: nexmarket-frontend
-    runtime: docker
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
-    plan: free
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        value: https://nexmarket-backend.onrender.com/api/v1
-      - key: NEXT_PUBLIC_APP_NAME
-        value: Nexmarket
-      - key: NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
-        sync: false
-      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-        sync: false
-
-  - type: redis
-    name: nexmarket-redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
-
-databases:
-  - name: nexmarket-db
-    plan: free
-    databaseName: nexmarket
-    user: nexmarket
