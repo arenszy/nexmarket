@@ -50,7 +50,7 @@ export default function RegisterPage() {
         <div className="bg-white rounded-lg shadow-xl p-8">
           <div className="text-center mb-8">
             <Link href="/" className="text-3xl font-bold text-shopee-orange">
-              Shopee<span className="text-shopee-text">Clone</span>
+              Nex<span className="text-shopee-text">market</span>
             </Link>
             <p className="text-shopee-text-light text-sm mt-1">Buat akun baru</p>
           </div>

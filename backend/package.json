@@ -1,8 +1,8 @@
 {
-  "name": "shopeeclone-backend",
+  "name": "nexmarket-backend",
   "version": "1.0.0",
-  "description": "ShopeeClone NestJS Backend API",
-  "author": "ShopeeClone",
+  "description": "Nexmarket NestJS Backend API",
+  "author": "Nexmarket",
   "private": true,
   "license": "MIT",
   "scripts": {

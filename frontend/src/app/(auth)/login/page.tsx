@@ -43,7 +43,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="text-3xl font-bold text-shopee-orange">
-              Shopee<span className="text-shopee-text">Clone</span>
+              Nex<span className="text-shopee-text">market</span>
             </Link>
             <p className="text-shopee-text-light text-sm mt-1">Masuk ke akun kamu</p>
           </div>
@@ -92,9 +92,9 @@ export default function LoginPage() {
           {/* Demo accounts */}
           <div className="mt-4 p-3 bg-gray-50 rounded text-xs text-shopee-text-light">
             <p className="font-medium mb-1">Demo Akun:</p>
-            <p>Buyer: buyer@shopeeclone.com / Buyer@123456</p>
-            <p>Seller: seller@shopeeclone.com / Seller@123456</p>
-            <p>Admin: admin@shopeeclone.com / Admin@123456</p>
+            <p>Buyer: buyer@nexmarket.com / Buyer@123456</p>
+            <p>Seller: seller@nexmarket.com / Seller@123456</p>
+            <p>Admin: admin@nexmarket.com / Admin@123456</p>
           </div>
 
           <div className="mt-6 text-center text-sm text-shopee-text-light">

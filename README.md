@@ -1,4 +1,4 @@
-# ShopeeClone — Production-Ready Multi-Vendor Marketplace
+# Nexmarket — Production-Ready Multi-Vendor Marketplace
 
 A full-stack e-commerce marketplace inspired by Shopee, built with Next.js, NestJS, and PostgreSQL.
 
@@ -18,7 +18,7 @@ A full-stack e-commerce marketplace inspired by Shopee, built with Next.js, Nest
 ## Project Structure
 
 ```
-shopeeclone/
+nexmarket/
 ├── backend/          # NestJS API server
 ├── frontend/         # Next.js web app
 ├── docker-compose.yml
@@ -36,13 +36,8 @@ shopeeclone/
 ### 1. Clone & Install
 
 ```bash
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
-npm install
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
 ### 2. Environment Setup
@@ -69,8 +64,8 @@ cd frontend && npm run dev
 
 ## Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full Vercel + Render/AWS deployment guide.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full Vercel + Render deployment guide.
 
 ## API Documentation
 
-See [backend/API.md](./backend/API.md) or visit `http://localhost:3001/api/docs` (Swagger UI).
+Visit `http://localhost:3001/api/docs` (Swagger UI).

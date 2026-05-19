@@ -50,7 +50,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-shopee-gray-border mt-8 pt-6 text-center text-xs text-shopee-text-light">
-          <p>© 2024 ShopeeClone. Hak Cipta Dilindungi.</p>
+          <p>© 2024 Nexmarket. Hak Cipta Dilindungi.</p>
         </div>
       </div>
     </footer>

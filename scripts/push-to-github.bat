@@ -1,31 +1,30 @@
 @echo off
 echo ============================================
-echo  ShopeeClone - Push to GitHub
+echo  Nexmarket - Push to GitHub
 echo ============================================
 echo.
 
 set /p GITHUB_USER="Masukkan GitHub username kamu: "
-set /p REPO_NAME="Nama repo (default: shopeeclone): "
-
-if "%REPO_NAME%"=="" set REPO_NAME=shopeeclone
 
 echo.
-echo Membuat repo di GitHub...
-echo Buka: https://github.com/new
-echo Nama repo: %REPO_NAME%
-echo Visibility: Public
-echo JANGAN centang "Initialize this repository"
+echo Langkah:
+echo 1. Buka https://github.com/new
+echo 2. Nama repo: nexmarket
+echo 3. Visibility: Public
+echo 4. JANGAN centang "Initialize this repository"
+echo 5. Klik Create repository
 echo.
 pause
 
-git remote add origin https://github.com/%GITHUB_USER%/%REPO_NAME%.git
+git remote remove origin 2>nul
+git remote add origin https://github.com/%GITHUB_USER%/nexmarket.git
 git branch -M main
 git push -u origin main
 
 echo.
 echo ============================================
-echo  BERHASIL! Repo tersedia di:
-echo  https://github.com/%GITHUB_USER%/%REPO_NAME%
+echo  BERHASIL!
+echo  https://github.com/%GITHUB_USER%/nexmarket
 echo ============================================
 echo.
 echo Langkah selanjutnya:

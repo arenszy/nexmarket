@@ -45,7 +45,7 @@ async function bootstrap() {
 
   // Swagger API Docs
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('ShopeeClone API')
+    .setTitle('Nexmarket API')
     .setDescription('Production-ready multi-vendor marketplace REST API')
     .setVersion('1.0')
     .addBearerAuth(
@@ -72,7 +72,7 @@ async function bootstrap() {
   });
 
   await app.listen(port);
-  console.log(`\n🚀 ShopeeClone API running on: http://localhost:${port}/api/v1`);
+  console.log(`\n🚀 Nexmarket API running on: http://localhost:${port}/api/v1`);
   console.log(`📚 Swagger docs: http://localhost:${port}/api/docs\n`);
 }
 

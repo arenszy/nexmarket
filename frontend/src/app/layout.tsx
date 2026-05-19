@@ -7,13 +7,13 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: { default: 'ShopeeClone', template: '%s | ShopeeClone' },
+  title: { default: 'Nexmarket', template: '%s | Nexmarket' },
   description: 'Belanja Online Terpercaya — Jutaan Produk, Harga Terbaik',
-  keywords: ['belanja online', 'marketplace', 'shopee', 'ecommerce'],
+  keywords: ['belanja online', 'marketplace', 'nexmarket', 'ecommerce'],
   openGraph: {
     type: 'website',
     locale: 'id_ID',
-    siteName: 'ShopeeClone',
+    siteName: 'Nexmarket',
   },
 }
 

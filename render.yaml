@@ -1,7 +1,6 @@
 services:
-  # ── Backend API ─────────────────────────────────────────────────────────────
   - type: web
-    name: shopeeclone-backend
+    name: nexmarket-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
@@ -14,11 +13,11 @@ services:
         value: 3001
       - key: DATABASE_URL
         fromDatabase:
-          name: shopeeclone-db
+          name: nexmarket-db
           property: connectionString
       - key: REDIS_URL
         fromService:
-          name: shopeeclone-redis
+          name: nexmarket-redis
           type: redis
           property: connectionString
       - key: JWT_ACCESS_SECRET
@@ -30,11 +29,7 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
-        fromService:
-          name: shopeeclone-frontend
-          type: web
-          property: host
-      # Set these manually in Render dashboard:
+        value: https://nexmarket.vercel.app
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
@@ -51,34 +46,34 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: ADMIN_EMAIL
+        value: admin@nexmarket.com
+      - key: ADMIN_PASSWORD
+        sync: false
 
-  # ── Frontend ─────────────────────────────────────────────────────────────────
   - type: web
-    name: shopeeclone-frontend
+    name: nexmarket-frontend
     runtime: docker
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: shopeeclone-backend
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://nexmarket-backend.onrender.com/api/v1
+      - key: NEXT_PUBLIC_APP_NAME
+        value: Nexmarket
       - key: NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
 
-  # ── Redis ────────────────────────────────────────────────────────────────────
   - type: redis
-    name: shopeeclone-redis
+    name: nexmarket-redis
     plan: free
     maxmemoryPolicy: allkeys-lru
 
 databases:
-  # ── PostgreSQL ───────────────────────────────────────────────────────────────
-  - name: shopeeclone-db
+  - name: nexmarket-db
     plan: free
-    databaseName: shopeeclone
-    user: shopeeclone
+    databaseName: nexmarket
+    user: nexmarket

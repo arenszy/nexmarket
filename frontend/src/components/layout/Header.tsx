@@ -119,7 +119,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
           <div className="text-white font-bold text-2xl tracking-tight">
-            Shopee<span className="text-yellow-300">Clone</span>
+            Nex<span className="text-yellow-300">market</span>
           </div>
         </Link>
 

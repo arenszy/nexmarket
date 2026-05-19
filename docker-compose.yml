@@ -3,25 +3,25 @@ version: '3.9'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: shopeeclone_db
+    container_name: nexmarket_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-shopeeclone}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-shopeeclone_pass}
-      POSTGRES_DB: ${POSTGRES_DB:-shopeeclone}
+      POSTGRES_USER: ${POSTGRES_USER:-nexmarket}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nexmarket_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-nexmarket}
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-shopeeclone}']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-nexmarket}']
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: shopeeclone_redis
+    container_name: nexmarket_redis
     restart: unless-stopped
     ports:
       - '6379:6379'
@@ -37,7 +37,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: shopeeclone_backend
+    container_name: nexmarket_backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -56,7 +56,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: shopeeclone_frontend
+    container_name: nexmarket_frontend
     restart: unless-stopped
     depends_on:
       - backend

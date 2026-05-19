@@ -12,10 +12,10 @@ async function main() {
     12,
   );
   const admin = await prisma.user.upsert({
-    where: { email: process.env.ADMIN_EMAIL || 'admin@shopeeclone.com' },
+    where: { email: process.env.ADMIN_EMAIL || 'admin@nexmarket.com' },
     update: {},
     create: {
-      email: process.env.ADMIN_EMAIL || 'admin@shopeeclone.com',
+      email: process.env.ADMIN_EMAIL || 'admin@nexmarket.com',
       password: adminPassword,
       name: 'Admin',
       role: Role.ADMIN,
@@ -27,10 +27,10 @@ async function main() {
   // Demo seller
   const sellerPassword = await bcrypt.hash('Seller@123456', 12);
   const seller = await prisma.user.upsert({
-    where: { email: 'seller@shopeeclone.com' },
+    where: { email: 'seller@nexmarket.com' },
     update: {},
     create: {
-      email: 'seller@shopeeclone.com',
+      email: 'seller@nexmarket.com',
       password: sellerPassword,
       name: 'Demo Seller',
       role: Role.SELLER,
@@ -146,10 +146,10 @@ async function main() {
   // Demo buyer
   const buyerPassword = await bcrypt.hash('Buyer@123456', 12);
   await prisma.user.upsert({
-    where: { email: 'buyer@shopeeclone.com' },
+    where: { email: 'buyer@nexmarket.com' },
     update: {},
     create: {
-      email: 'buyer@shopeeclone.com',
+      email: 'buyer@nexmarket.com',
       password: buyerPassword,
       name: 'Demo Buyer',
       role: Role.BUYER,
@@ -183,9 +183,9 @@ async function main() {
 
   console.log('\n🎉 Seeding complete!');
   console.log('─────────────────────────────────');
-  console.log('Admin:  admin@shopeeclone.com / Admin@123456');
-  console.log('Seller: seller@shopeeclone.com / Seller@123456');
-  console.log('Buyer:  buyer@shopeeclone.com / Buyer@123456');
+  console.log('Admin:  admin@nexmarket.com / Admin@123456');
+  console.log('Seller: seller@nexmarket.com / Seller@123456');
+  console.log('Buyer:  buyer@nexmarket.com / Buyer@123456');
 }
 
 main()
